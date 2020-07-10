@@ -9,9 +9,10 @@ public class LaserBehaviour : MonoBehaviour
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private float _cutExplosion = 0;
     [SerializeField] private Transform[] _points = null;
-
+    [SerializeField] private GameObject _particleEffect = null;
     private float _maxLaserDistance = 0;
     private Transform _midPoint;
+    private Transform _target;
     private RaycastHit _hit;
     private bool _sliceCoolDown = false;
 
@@ -32,7 +33,7 @@ public class LaserBehaviour : MonoBehaviour
     #region Slicing
     public void Slice()
     {
-        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_maxLaserDistance, 0.01f, 0.1f), _midPoint.rotation, _layerMask);
+        Collider[] hits = Physics.OverlapBox(_target.position, new Vector3(_maxLaserDistance, 0.01f, 0.1f), _midPoint.rotation, _layerMask);
 
         if (hits.Length <= 0)
             return;
@@ -79,16 +80,30 @@ public class LaserBehaviour : MonoBehaviour
 
         if (Physics.Raycast(_points[0].position, RayDir, out _hit, _maxLaserDistance,_layerMask))
         {
-            Debug.Log("Intersect");
+            //Make particle speed vary depending on player speed here somewhere
+            _target = _hit.transform;
+            DisplayParticles();
             if (!_sliceCoolDown)
             {
                 Slice();
-            }
+            }       
             _sliceCoolDown = true;
         }
         else
+        {
+            RemoveParticles();
             _sliceCoolDown = false;
+        }
     }
     #endregion
-
+    private void DisplayParticles()
+    {
+        _particleEffect.transform.position = _hit.point;
+        _particleEffect.transform.rotation = _hit.transform.rotation;
+        _particleEffect.SetActive(true);
+    }
+    private void RemoveParticles()
+    {
+        _particleEffect.SetActive(false);
+    }
 }
