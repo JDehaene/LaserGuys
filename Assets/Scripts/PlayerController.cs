@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Rigidbody))]
-
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private int _id = 1;
@@ -39,7 +38,7 @@ public class PlayerController : MonoBehaviour
     void ProcessInput()
     {
         Vector2 move = _input.LThumb(_id) * 10 * Time.deltaTime;
-        _rigidbody.transform.Translate(move.x, 0, move.y);
+        transform.Translate(new Vector3(move.x, 0, move.y));
 
         if (_input.ADown(_id)) DoJump();
     }

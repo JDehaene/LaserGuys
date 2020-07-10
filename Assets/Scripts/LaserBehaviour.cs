@@ -3,31 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using EzySlice;
 
-public class SliceBehaviour : MonoBehaviour
+public class LaserBehaviour : MonoBehaviour
 {
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
-    [SerializeField] private float _maxLaserDistance = 0, _laserWidth = 0;
     [SerializeField] private float _cutExplosion = 0;
-    [SerializeField] private Transform _midPoint;
+    [SerializeField] private Transform[] _points = null;
 
-    [SerializeField] private Transform[] _playerLocations = null;
-
+    private float _maxLaserDistance = 0;
+    private Transform _midPoint;
     private RaycastHit _hit;
     private bool _sliceCoolDown = false;
+
+    private void Awake()
+    {
+        _midPoint = this.transform;
+    }
 
     private void Update()
     {
         CheckSlice();
-        _maxLaserDistance = Vector3.Distance(_playerLocations[0].position, _playerLocations[1].position);
-        _midPoint.position = (_playerLocations[1].position+ _playerLocations[0].position)/2;
-        _midPoint.LookAt(_playerLocations[1]);
+
+        _maxLaserDistance = Vector3.Distance(_points[0].position, _points[1].position);
+        _midPoint.position = (_points[1].position+ _points[0].position)/2;
+        _midPoint.LookAt(_points[1]);
     }
 
+    #region Slicing
     public void Slice()
     {
-
-        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_maxLaserDistance, 0.01f, _laserWidth), _midPoint.rotation, _layerMask);
+        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_maxLaserDistance, 0.01f, 0.1f), _midPoint.rotation, _layerMask);
 
         if (hits.Length <= 0)
             return;
@@ -37,7 +42,6 @@ public class SliceBehaviour : MonoBehaviour
             SlicedHull hull = SliceObject(hits[i].gameObject, _cutMaterial);
             if (hull != null)
             {
-
                 GameObject bottom = hull.CreateLowerHull(hits[i].gameObject, _cutMaterial);
                 GameObject top = hull.CreateUpperHull(hits[i].gameObject, _cutMaterial);
                 AddHullComponents(bottom);
@@ -68,12 +72,12 @@ public class SliceBehaviour : MonoBehaviour
 
     private void CheckSlice()
     {
-        Vector3 RayDir = _playerLocations[1].position - _playerLocations[0].position;
+        Vector3 RayDir = _points[1].position - _points[0].position;
 
-        Debug.DrawLine(_playerLocations[0].position, _playerLocations[1].position,Color.red);
-        Debug.DrawRay(_playerLocations[0].position, RayDir, Color.blue);
+        Debug.DrawLine(_points[0].position, _points[1].position,Color.red);
+        Debug.DrawRay(_points[0].position, RayDir, Color.blue);
 
-        if (Physics.Raycast(_playerLocations[0].position, RayDir, out _hit, _maxLaserDistance,_layerMask))
+        if (Physics.Raycast(_points[0].position, RayDir, out _hit, _maxLaserDistance,_layerMask))
         {
             Debug.Log("Intersect");
             if (!_sliceCoolDown)
@@ -85,6 +89,6 @@ public class SliceBehaviour : MonoBehaviour
         else
             _sliceCoolDown = false;
     }
-
+    #endregion
 
 }
