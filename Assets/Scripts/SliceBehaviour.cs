@@ -8,14 +8,26 @@ public class SliceBehaviour : MonoBehaviour
     [SerializeField] private Transform _cutPlane = null;
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
-    [SerializeField] private int _cuttingBoxSize = 0, _layerNumber = 0, _laserWidth = 0;
-    [SerializeField] private float _laserCoolDown = 0;
+    [SerializeField] private int _cuttingBoxSize = 0, _laserWidth = 0;
+    [SerializeField] private float _cutExplosion = 0;
+    [SerializeField] private Transform _midPoint;
+
+    [SerializeField] private Transform[] _playerLocations = null;
+
+    private RaycastHit _hit;
     private bool _sliceCoolDown = false;
+
+    private void Update()
+    {
+        CheckSlice();
+        _midPoint.position = (_playerLocations[1].position+ _playerLocations[0].position)/2;
+        _midPoint.LookAt(_playerLocations[1]);
+    }
 
     public void Slice()
     {
 
-        Collider[] hits = Physics.OverlapBox(_cutPlane.position, new Vector3(_cuttingBoxSize, 0.01f, _laserWidth), _cutPlane.rotation, _layerMask);
+        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_cuttingBoxSize, 0.01f, _laserWidth), _midPoint.rotation, _layerMask);
 
         if (hits.Length <= 0)
             return;
@@ -36,13 +48,13 @@ public class SliceBehaviour : MonoBehaviour
     }
     private void AddHullComponents(GameObject go)
     {
-        go.layer = _layerNumber;
+        go.layer = LayerMask.NameToLayer("Cuttable");
         Rigidbody rb = go.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
         collider.convex = true;
 
-        rb.AddExplosionForce(100, go.transform.position, 20);
+        rb.AddExplosionForce(_cutExplosion, go.transform.position, 20);
     }
 
     private SlicedHull SliceObject(GameObject obj, Material crossSectionMaterial = null)
@@ -53,16 +65,23 @@ public class SliceBehaviour : MonoBehaviour
 
         return obj.Slice(_cutPlane.position, _cutPlane.up, crossSectionMaterial);
     }
-    private void OnTriggerStay(Collider other)
+
+    private void CheckSlice()
     {
-        if(!_sliceCoolDown)
+        Debug.DrawLine(_playerLocations[0].position, _playerLocations[1].position,Color.red);
+
+        if (Physics.Raycast(_playerLocations[0].position, _playerLocations[1].position,out _hit, _layerMask))
         {
-            Slice();
+            Debug.Log("Intersectg");
+            if (!_sliceCoolDown)
+            {
+                Slice();
+            }
+            _sliceCoolDown = true;
         }
-        _sliceCoolDown = true;
+        else
+            _sliceCoolDown = false;
     }
-    private void OnTriggerExit(Collider other)
-    {
-        _sliceCoolDown = false;
-    }
+
+
 }
