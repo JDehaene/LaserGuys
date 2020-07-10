@@ -8,13 +8,14 @@ public class SliceBehaviour : MonoBehaviour
     [SerializeField] private Transform _cutPlane = null;
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
-    [SerializeField] private int _cuttingBoxSize = 0;
-    private void Start()
-    {
-    }
+    [SerializeField] private int _cuttingBoxSize = 0, _layerNumber = 0, _laserWidth = 0;
+    [SerializeField] private float _laserCoolDown = 0;
+    private bool _sliceCoolDown = false;
+
     public void Slice()
     {
-        Collider[] hits = Physics.OverlapBox(_cutPlane.position, new Vector3(5, 0.1f, 5), _cutPlane.rotation, _layerMask);
+
+        Collider[] hits = Physics.OverlapBox(_cutPlane.position, new Vector3(_cuttingBoxSize, 0.01f, _laserWidth), _cutPlane.rotation, _layerMask);
 
         if (hits.Length <= 0)
             return;
@@ -24,6 +25,7 @@ public class SliceBehaviour : MonoBehaviour
             SlicedHull hull = SliceObject(hits[i].gameObject, _cutMaterial);
             if (hull != null)
             {
+
                 GameObject bottom = hull.CreateLowerHull(hits[i].gameObject, _cutMaterial);
                 GameObject top = hull.CreateUpperHull(hits[i].gameObject, _cutMaterial);
                 AddHullComponents(bottom);
@@ -34,7 +36,7 @@ public class SliceBehaviour : MonoBehaviour
     }
     private void AddHullComponents(GameObject go)
     {
-        go.layer = 9;
+        go.layer = _layerNumber;
         Rigidbody rb = go.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
@@ -51,10 +53,16 @@ public class SliceBehaviour : MonoBehaviour
 
         return obj.Slice(_cutPlane.position, _cutPlane.up, crossSectionMaterial);
     }
-
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        Debug.Log("Slicing active");
-        Slice();
+        if(!_sliceCoolDown)
+        {
+            Slice();
+        }
+        _sliceCoolDown = true;
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        _sliceCoolDown = false;
     }
 }
