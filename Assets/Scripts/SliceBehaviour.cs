@@ -5,10 +5,9 @@ using EzySlice;
 
 public class SliceBehaviour : MonoBehaviour
 {
-    [SerializeField] private Transform _cutPlane = null;
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
-    [SerializeField] private int _cuttingBoxSize = 0, _laserWidth = 0;
+    [SerializeField] private float _maxLaserDistance = 0, _laserWidth = 0;
     [SerializeField] private float _cutExplosion = 0;
     [SerializeField] private Transform _midPoint;
 
@@ -20,6 +19,7 @@ public class SliceBehaviour : MonoBehaviour
     private void Update()
     {
         CheckSlice();
+        _maxLaserDistance = Vector3.Distance(_playerLocations[0].position, _playerLocations[1].position);
         _midPoint.position = (_playerLocations[1].position+ _playerLocations[0].position)/2;
         _midPoint.LookAt(_playerLocations[1]);
     }
@@ -27,7 +27,7 @@ public class SliceBehaviour : MonoBehaviour
     public void Slice()
     {
 
-        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_cuttingBoxSize, 0.01f, _laserWidth), _midPoint.rotation, _layerMask);
+        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_maxLaserDistance, 0.01f, _laserWidth), _midPoint.rotation, _layerMask);
 
         if (hits.Length <= 0)
             return;
@@ -63,16 +63,19 @@ public class SliceBehaviour : MonoBehaviour
         if (obj.GetComponent<MeshFilter>() == null)
             return null;
 
-        return obj.Slice(_cutPlane.position, _cutPlane.up, crossSectionMaterial);
+        return obj.Slice(_midPoint.position, _midPoint.transform.up, crossSectionMaterial);
     }
 
     private void CheckSlice()
     {
-        Debug.DrawLine(_playerLocations[0].position, _playerLocations[1].position,Color.red);
+        Vector3 RayDir = _playerLocations[1].position - _playerLocations[0].position;
 
-        if (Physics.Raycast(_playerLocations[0].position, _playerLocations[1].position,out _hit, _layerMask))
+        Debug.DrawLine(_playerLocations[0].position, _playerLocations[1].position,Color.red);
+        Debug.DrawRay(_playerLocations[0].position, RayDir, Color.blue);
+
+        if (Physics.Raycast(_playerLocations[0].position, RayDir, out _hit, _maxLaserDistance,_layerMask))
         {
-            Debug.Log("Intersectg");
+            Debug.Log("Intersect");
             if (!_sliceCoolDown)
             {
                 Slice();
