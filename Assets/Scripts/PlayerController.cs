@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
         ProcessInput();
     }
 
+    #region InputHandling
     void ProcessInput()
     {
         Vector2 move = _input.LThumb(_id) * 10 * Time.deltaTime;
@@ -42,6 +43,7 @@ public class PlayerController : MonoBehaviour
 
         if (_input.ADown(_id)) DoJump();
     }
+    #endregion
 
     #region Jumping
     void DoJump()
@@ -60,7 +62,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(LayerMask.NameToLayer("JumpReset"));
+        //Debug.Log(LayerMask.NameToLayer("JumpReset"));
         if (collision.gameObject.layer == LayerMask.NameToLayer("JumpReset")) ResetJumps();
     }
 }
