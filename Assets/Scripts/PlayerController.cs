@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private int _id = 1; 
     private InputManager _input;
 
     private void Awake()
@@ -19,8 +20,7 @@ public class PlayerController : MonoBehaviour
 
     void ProcessInput()
     {
-        Vector2 move = _input.LThumb(1) * 10;
-        Debug.Log("Input: " + move);
+        Vector2 move = _input.LThumb(_id) * 10 * Time.deltaTime;
         gameObject.transform.Translate(new Vector3(move.x, 0, move.y), Space.World);
     }
 }
