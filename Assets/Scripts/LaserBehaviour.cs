@@ -21,6 +21,7 @@ public class LaserBehaviour : MonoBehaviour
     private float _maxLaserDistance = 0;
     private Transform _midPoint;
     private RaycastHit _hit;
+    private GameObject _sliceTarget, _previousSliceTarget;
     private bool _sliceCoolDown = false;
 
     private void Awake()
@@ -53,28 +54,22 @@ public class LaserBehaviour : MonoBehaviour
     #region Slicing
     public void Slice()
     {
-        Collider[] hits = Physics.OverlapBox(_hit.point, new Vector3(_maxLaserDistance, 0.01f, 0.1f), _midPoint.rotation, _layerMask);
-
-        if (hits.Length <= 0)
-            return;
-
-        for (int i = 0; i < hits.Length; i++)
+        SlicedHull hull = SliceObject(_hit.transform.gameObject, _cutMaterial);
+        if (hull != null)
         {
-            SlicedHull hull = SliceObject(hits[i].gameObject, _cutMaterial);
-            if (hull != null)
-            {
-                GameObject bottom = hull.CreateLowerHull(hits[i].gameObject, _cutMaterial);
-                GameObject top = hull.CreateUpperHull(hits[i].gameObject, _cutMaterial);
-                AddHullComponents(bottom);
-                AddHullComponents(top);
-                Destroy(hits[i].gameObject);
-            }
+            Debug.Log("Hulls Created");
+            GameObject bottom = hull.CreateLowerHull(_hit.transform.gameObject, _cutMaterial);
+            GameObject top = hull.CreateUpperHull(_hit.transform.gameObject, _cutMaterial);
+            AddHullComponents(bottom);
+            AddHullComponents(top);
+            Destroy(_hit.transform.gameObject);
         }
     }
     private void AddHullComponents(GameObject go)
     {
         go.layer = LayerMask.NameToLayer("Cuttable");
         Rigidbody rb = go.AddComponent<Rigidbody>();
+        go.AddComponent<SliceHolder>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
         collider.convex = true;
@@ -94,18 +89,22 @@ public class LaserBehaviour : MonoBehaviour
     private void CheckSlice()
     {
         Vector3 RayDir = _players[1].transform.position - _players[0].transform.position;
+        Ray Ray = new Ray(_players[0].transform.position, RayDir);
 
-        if (Physics.Raycast(_players[0].transform.position, RayDir, out _hit, _maxLaserDistance,_layerMask))
+
+        if (Physics.Raycast(Ray, out _hit, _maxLaserDistance, _layerMask))
         {
-            Debug.Log("Intersect");
-            if (!_sliceCoolDown)
+            _sliceTarget = _hit.transform.gameObject;
+
+            if(_sliceTarget != _previousSliceTarget)
             {
                 Slice();
+
+                _previousSliceTarget = _sliceTarget;
+                _sliceTarget = null;
             }
-            _sliceCoolDown = true;
         }
-        else
-            _sliceCoolDown = false;
+
     }
 
     private void Draw()
