@@ -1325,8 +1325,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!64 &1308973106
-MeshCollider:
+--- !u!65 &1308973106
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1335,10 +1335,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 308242865}
+  serializedVersion: 2
+  m_Size: {x: 6.1533813, y: 4.896105, z: 30}
+  m_Center: {x: 19.675049, y: 2.4480524, z: -15}
 --- !u!114 &1308973107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2116,7 +2115,7 @@ PrefabInstance:
     - target: {fileID: 1701725512957867695, guid: 22edffcc28bec1443bd044fa0b3d09eb,
         type: 3}
       propertyPath: _cutExplosion
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1701725512957867695, guid: 22edffcc28bec1443bd044fa0b3d09eb,
         type: 3}
@@ -2175,7 +2174,7 @@ PrefabInstance:
     - target: {fileID: 5921112630549400898, guid: 8e9a95f5cb337214599f7b76c5b5acd7,
         type: 3}
       propertyPath: m_UseGravity
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5921112630549400923, guid: 8e9a95f5cb337214599f7b76c5b5acd7,
         type: 3}

@@ -69,7 +69,6 @@ public class LaserBehaviour : MonoBehaviour
     {
         go.layer = LayerMask.NameToLayer("Cuttable");
         Rigidbody rb = go.AddComponent<Rigidbody>();
-        go.AddComponent<SliceHolder>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
         collider.convex = true;
