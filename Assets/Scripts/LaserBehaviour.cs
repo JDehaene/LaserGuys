@@ -3,21 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using EzySlice;
 
-[RequireComponent(typeof(LineRenderer))]
 public class LaserBehaviour : MonoBehaviour
 {
-    [SerializeField] private PlayerController[] _players = null;
-
-    [Header("Slicing")]
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private float _cutExplosion = 0;
+    [SerializeField] private Transform[] _points = null;
 
-    [Header("Spring")]
-    [SerializeField] private Vector2 _minMaxDistance = new Vector2();
-    [SerializeField] private float _springStrength = 10f;
-
-    private LineRenderer _lineRenderer;
     private float _maxLaserDistance = 0;
     private Transform _midPoint;
     private RaycastHit _hit;
@@ -26,28 +18,15 @@ public class LaserBehaviour : MonoBehaviour
     private void Awake()
     {
         _midPoint = this.transform;
-        _lineRenderer = GetComponent<LineRenderer>();
-        _lineRenderer.positionCount = 2;
-
-        // Setup spring connection:
-        SpringJoint spring = _players[0].gameObject.AddComponent<SpringJoint>();
-        spring.connectedBody = _players[1].GetComponent<Rigidbody>();
-        spring.minDistance = _minMaxDistance.x;
-        spring.maxDistance = _minMaxDistance.y;
-        spring.spring = _springStrength;
     }
-
 
     private void Update()
     {
-        Draw();
         CheckSlice();
 
-        _maxLaserDistance = Vector3.Distance(_players[0].transform.position, _players[1].transform.position);
-        _midPoint.position = (_players[1].transform.position+ _players[0].transform.position)/2;
-        _midPoint.LookAt(_players[1].transform.position);
-
-        for (int i = 0; i < 2; ++i) _lineRenderer.SetPosition(i, _players[i].transform.position);
+        _maxLaserDistance = Vector3.Distance(_points[0].position, _points[1].position);
+        _midPoint.position = (_points[1].position+ _points[0].position)/2;
+        _midPoint.LookAt(_points[1]);
     }
 
     #region Slicing
@@ -93,9 +72,12 @@ public class LaserBehaviour : MonoBehaviour
 
     private void CheckSlice()
     {
-        Vector3 RayDir = _players[1].transform.position - _players[0].transform.position;
+        Vector3 RayDir = _points[1].position - _points[0].position;
 
-        if (Physics.Raycast(_players[0].transform.position, RayDir, out _hit, _maxLaserDistance,_layerMask))
+        Debug.DrawLine(_points[0].position, _points[1].position,Color.red);
+        Debug.DrawRay(_points[0].position, RayDir, Color.blue);
+
+        if (Physics.Raycast(_points[0].position, RayDir, out _hit, _maxLaserDistance,_layerMask))
         {
             Debug.Log("Intersect");
             if (!_sliceCoolDown)
@@ -106,11 +88,6 @@ public class LaserBehaviour : MonoBehaviour
         }
         else
             _sliceCoolDown = false;
-    }
-
-    private void Draw()
-    {
-        Debug.DrawLine(_players[0].transform.position, _players[1].transform.position, Color.red);
     }
     #endregion
 
