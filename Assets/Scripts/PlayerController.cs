@@ -1,31 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     [Header("ID")]
     [SerializeField] private int _id = 1;
     public int ID { get { return _id; } }
 
-    [Header("Movement")] 
-    [SerializeField] private float _moveSpeed = 10;
+    [Header("Movement")]
+    [SerializeField] private float _accelerationPower = 10.0f;
+    [SerializeField] private float _maxSpeed = 20.0f;
+    [SerializeField] private float _drag = 2.0f;
     [SerializeField] private float _jumpForce = 10;
+    [SerializeField] private float _weight = -40.0f;
     [SerializeField] private int _amountOfJumps = 2;
 
     private int _jumpsLeft = 0;
+    private Vector3 _velocity = new Vector3();
+    private Vector3 _acceleration = new Vector3();
 
     private InputManager _input;
-    private Rigidbody _rigidbody;
+    private CharacterController _controller;
 
     private void Awake()
     {
         _input = FindObjectOfType<InputManager>();
         if (!_input) { };
 
-        _rigidbody = GetComponent<Rigidbody>();
+        _controller = GetComponent<CharacterController>();
     }
 
     private void Start()
@@ -36,25 +42,38 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ProcessInput();
+
+        _velocity += _acceleration * Time.deltaTime;
+        _velocity = Vector3.ClampMagnitude(_velocity, _maxSpeed);
+
+        _controller.Move(_velocity * Time.deltaTime);
+
+        if (_velocity == Vector3.zero) return;
+
+        float newScale = _velocity.magnitude - (_drag * Time.deltaTime);
+        _velocity = _velocity.normalized * newScale;
+
+        // Apply gravity:
+        _acceleration.y = _weight;
     }
 
-    #region InputHandling
     void ProcessInput()
     {
         Vector2 input = _input.LThumb(_id);
-        input = input.normalized * _moveSpeed;
+        input = input.normalized * _accelerationPower;
 
-        _rigidbody.velocity = new Vector3(input.x, _rigidbody.velocity.y, input.y);
+        _acceleration.x = input.x;
+        _acceleration.z = input.y;
 
         if (_input.ADown(_id)) DoJump();
     }
-    #endregion
 
     #region Jumping
     void DoJump()
     {
         if (_jumpsLeft <= 0) return;
-        _rigidbody.AddForce(new Vector3(0, 1, 0) * _jumpForce, ForceMode.VelocityChange);
+
+        _acceleration.y = _jumpForce * 1000;
 
         --_jumpsLeft;
     }
@@ -65,9 +84,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        //Debug.Log(LayerMask.NameToLayer("JumpReset"));
-        if (collision.gameObject.layer == LayerMask.NameToLayer("JumpReset")) ResetJumps();
+        if (hit.gameObject.layer == LayerMask.NameToLayer("JumpReset")) ResetJumps();
     }
 }
