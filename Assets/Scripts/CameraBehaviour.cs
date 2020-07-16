@@ -2,19 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class CameraBehaviour : MonoBehaviour
 {
-    [SerializeField] private Vector3 _offset;
     [SerializeField] private float _smoothTime = 0.5f;
     public List<Transform> targets;
     private Vector3 _velocity;
-    private Camera _camera;
 
-    private void Awake()
-    {
-        _camera = GetComponent<Camera>();
-    }
     private void LateUpdate()
     {
         if (targets.Count == 0) return;
@@ -25,8 +18,7 @@ public class CameraBehaviour : MonoBehaviour
     private void Move()
     {
         Vector3 mid = GetMidPoint();
-
-        transform.position = Vector3.SmoothDamp(transform.position, mid + _offset, ref _velocity, _smoothTime);
+        transform.localPosition = Vector3.SmoothDamp(transform.position, mid, ref _velocity, _smoothTime);
     }
 
     private Vector3 GetMidPoint()

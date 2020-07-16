@@ -46,7 +46,8 @@ public class PlayerController : MonoBehaviour
         _velocity += _acceleration * Time.deltaTime;
         _velocity = Vector3.ClampMagnitude(_velocity, _maxSpeed);
 
-        _controller.Move(_velocity * Time.deltaTime);
+        Vector3 localVel = transform.TransformVector(_velocity);
+        _controller.Move(localVel * Time.deltaTime);
 
         if (_velocity == Vector3.zero) return;
 
@@ -74,12 +75,14 @@ public class PlayerController : MonoBehaviour
         if (_jumpsLeft <= 0) return;
 
         _acceleration.y = _jumpForce * 1000;
+        _velocity.y = 0;
 
         --_jumpsLeft;
     }
     void ResetJumps()
     {
         _jumpsLeft = _amountOfJumps;
+        _velocity.y = 0;
     }
     #endregion
 

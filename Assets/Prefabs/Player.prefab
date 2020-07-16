@@ -61,11 +61,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 1
-  _accelerationPower: 15
-  _maxSpeed: 20
-  _drag: 2
-  _jumpForce: 5
-  _weight: -40
+  _accelerationPower: 100
+  _maxSpeed: 30
+  _drag: 40
+  _jumpForce: 6
+  _weight: -50
   _amountOfJumps: 2
 --- !u!143 &3657962945429831234
 CharacterController:
