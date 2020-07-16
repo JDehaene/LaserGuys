@@ -12,6 +12,7 @@ public class LaserBehaviour : MonoBehaviour
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private float _cutExplosion = 0;
+    [SerializeField] private PhysicMaterial _pillarMaterial = null;
     public GameObject Sparks = null;
 
     [Header("Spring")]
@@ -19,11 +20,11 @@ public class LaserBehaviour : MonoBehaviour
     [SerializeField] private float _springStrength = 10f;
 
 
-    private LineRenderer _lineRenderer;
+    private LineRenderer _lineRenderer = null;
     private float _maxLaserDistance = 0;
-    private Transform _midPoint;
+    private Transform _midPoint = null;
     private RaycastHit _hit;
-    private GameObject _sliceTarget, _previousSliceTarget;
+    private GameObject _sliceTarget, _previousSliceTarget = null;
     private bool _sliceCoolDown = false;
 
     private void Awake()
@@ -43,7 +44,6 @@ public class LaserBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Draw();
         CheckSlice();
 
         _maxLaserDistance = Vector3.Distance(_players[0].transform.position, _players[1].transform.position);
@@ -73,6 +73,7 @@ public class LaserBehaviour : MonoBehaviour
         Rigidbody rb = go.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
+        collider.material = _pillarMaterial;
         collider.convex = true;
 
         rb.AddExplosionForce(_cutExplosion, go.transform.position, 20);
@@ -99,13 +100,5 @@ public class LaserBehaviour : MonoBehaviour
         }
 
     }
-
-
     #endregion
-
-    private void Draw()
-    {
-        Debug.DrawLine(_players[0].transform.position, _players[1].transform.position, Color.red);
-    }
-
 }
