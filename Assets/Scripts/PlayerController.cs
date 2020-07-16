@@ -6,10 +6,14 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("ID")]
     [SerializeField] private int _id = 1;
+    public int ID { get { return _id; } }
+
+    [Header("Movement")] 
+    [SerializeField] private float _moveSpeed = 10;
     [SerializeField] private float _jumpForce = 10;
     [SerializeField] private int _amountOfJumps = 2;
-    public int ID { get { return _id; } }
 
     private int _jumpsLeft = 0;
 
@@ -37,8 +41,10 @@ public class PlayerController : MonoBehaviour
     #region InputHandling
     void ProcessInput()
     {
-        Vector2 move = _input.LThumb(_id) * 10 * Time.deltaTime;
-        transform.Translate(new Vector3(move.x, 0, move.y));
+        Vector2 input = _input.LThumb(_id);
+        input = input.normalized * _moveSpeed;
+
+        _rigidbody.velocity = new Vector3(input.x, _rigidbody.velocity.y, input.y);
 
         if (_input.ADown(_id)) DoJump();
     }
@@ -48,7 +54,7 @@ public class PlayerController : MonoBehaviour
     void DoJump()
     {
         if (_jumpsLeft <= 0) return;
-        _rigidbody.AddForce(new Vector3(0, 1, 0) * _jumpForce, ForceMode.Impulse);
+        _rigidbody.AddForce(new Vector3(0, 1, 0) * _jumpForce, ForceMode.VelocityChange);
 
         --_jumpsLeft;
     }

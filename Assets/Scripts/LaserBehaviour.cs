@@ -31,11 +31,11 @@ public class LaserBehaviour : MonoBehaviour
         _lineRenderer.positionCount = 2;
 
         // Setup spring connection:
-        SpringJoint spring = _players[0].gameObject.AddComponent<SpringJoint>();
-        spring.connectedBody = _players[1].GetComponent<Rigidbody>();
-        spring.minDistance = _minMaxDistance.x;
-        spring.maxDistance = _minMaxDistance.y;
-        spring.spring = _springStrength;
+        //SpringJoint spring = _players[0].gameObject.AddComponent<SpringJoint>();
+       // spring.connectedBody = _players[1].GetComponent<Rigidbody>();
+        //spring.minDistance = _minMaxDistance.x;
+        //spring.maxDistance = _minMaxDistance.y;
+        //spring.spring = _springStrength;
     }
 
 
@@ -67,7 +67,8 @@ public class LaserBehaviour : MonoBehaviour
     }
     private void AddHullComponents(GameObject go)
     {
-        go.layer = LayerMask.NameToLayer("Cuttable");
+        go.layer = LayerMask.NameToLayer("JumpReset");
+
         Rigidbody rb = go.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         MeshCollider collider = go.AddComponent<MeshCollider>();
@@ -106,10 +107,12 @@ public class LaserBehaviour : MonoBehaviour
 
     }
 
+
+    #endregion
+
     private void Draw()
     {
         Debug.DrawLine(_players[0].transform.position, _players[1].transform.position, Color.red);
     }
-    #endregion
 
 }
