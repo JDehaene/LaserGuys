@@ -1952,6 +1952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 2
+  _moveSpeed: 10
   _jumpForce: 10
   _amountOfJumps: 2
 --- !u!114 &1895791831
@@ -2147,6 +2148,18 @@ PrefabInstance:
       propertyPath: _players.Array.data[1]
       value: 
       objectReference: {fileID: 1895791830}
+    - target: {fileID: 1701725512957867695, guid: 22edffcc28bec1443bd044fa0b3d09eb,
+        type: 3}
+      propertyPath: _sparks
+      value: 
+      objectReference: {fileID: 775223698404185377, guid: dcb17ff66e49cd84d82bda76a2d3fa9f,
+        type: 3}
+    - target: {fileID: 1701725512957867695, guid: 22edffcc28bec1443bd044fa0b3d09eb,
+        type: 3}
+      propertyPath: Sparks
+      value: 
+      objectReference: {fileID: 775223698404185377, guid: dcb17ff66e49cd84d82bda76a2d3fa9f,
+        type: 3}
     - target: {fileID: 9043612268205999016, guid: 22edffcc28bec1443bd044fa0b3d09eb,
         type: 3}
       propertyPath: m_Constraints
