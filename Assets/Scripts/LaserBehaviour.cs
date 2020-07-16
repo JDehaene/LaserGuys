@@ -12,10 +12,12 @@ public class LaserBehaviour : MonoBehaviour
     [SerializeField] private Material _cutMaterial = null;
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private float _cutExplosion = 0;
+    public GameObject Sparks = null;
 
     [Header("Spring")]
     [SerializeField] private Vector2 _minMaxDistance = new Vector2();
     [SerializeField] private float _springStrength = 10f;
+
 
     private LineRenderer _lineRenderer;
     private float _maxLaserDistance = 0;
@@ -57,7 +59,6 @@ public class LaserBehaviour : MonoBehaviour
         SlicedHull hull = SliceObject(_hit.transform.gameObject, _cutMaterial);
         if (hull != null)
         {
-            Debug.Log("Hulls Created");
             GameObject bottom = hull.CreateLowerHull(_hit.transform.gameObject, _cutMaterial);
             GameObject top = hull.CreateUpperHull(_hit.transform.gameObject, _cutMaterial);
             AddHullComponents(bottom);
@@ -67,7 +68,7 @@ public class LaserBehaviour : MonoBehaviour
     }
     private void AddHullComponents(GameObject go)
     {
-        go.layer = LayerMask.NameToLayer("JumpReset");
+        go.AddComponent<NonSliceable>();
 
         Rigidbody rb = go.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -94,15 +95,7 @@ public class LaserBehaviour : MonoBehaviour
 
         if (Physics.Raycast(Ray, out _hit, _maxLaserDistance, _layerMask))
         {
-            _sliceTarget = _hit.transform.gameObject;
-
-            if(_sliceTarget != _previousSliceTarget)
-            {
-                Slice();
-
-                _previousSliceTarget = _sliceTarget;
-                _sliceTarget = null;
-            }
+            Slice();
         }
 
     }

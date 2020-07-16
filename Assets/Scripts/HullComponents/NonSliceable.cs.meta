@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 0e16dc24ef23ff948bc43d1b73004d50
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _cooldownSparks: {fileID: 775223698404185377, guid: dcb17ff66e49cd84d82bda76a2d3fa9f,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
