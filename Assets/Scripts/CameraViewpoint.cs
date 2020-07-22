@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,19 +8,45 @@ using UnityEngine;
 public class CameraViewpoint : MonoBehaviour
 {
     [SerializeField] private Mesh _debugMesh;
+    [SerializeField] private CameraBehaviour _camera;
+
+    [Header("AlignAxes")]
+    [SerializeField] private bool _alignX = true;
+    [SerializeField] private bool _alignY = true;
+    [SerializeField] private bool _alignZ = true;
+
     private Collider _collider;
     public Collider Collider { get => _collider;}
-
 
     private void Awake()
     {
         _collider = GetComponent<Collider>();
+        _collider.isTrigger = true; // Set trigger, just to be sure :p
     }
 
-    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (_camera == null) return;
+        PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            // Ugly :s, I'm tired...
+            Vector3 currentEulers = _camera.transform.rotation.eulerAngles;
+            Vector3 myEulers = transform.rotation.eulerAngles;
+            Vector3 finalEulers;
+
+            if (_alignX) finalEulers.x = myEulers.x; else finalEulers.x = currentEulers.x;
+            if (_alignY) finalEulers.y = myEulers.y; else finalEulers.y = currentEulers.y;
+            if (_alignZ) finalEulers.z = myEulers.z; else finalEulers.z = currentEulers.z;
+
+            // Let camera allign this point's rotation
+            _camera.AlignToRotation(finalEulers);
+        }
+    }
+
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawMesh(_debugMesh, transform.position, transform.rotation, transform.localScale * 500);
+        DrawArrow.ForGizmo(transform.position, transform.forward * 5, Color.green);
     }
 }

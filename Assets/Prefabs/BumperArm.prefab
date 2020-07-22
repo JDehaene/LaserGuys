@@ -43,5 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b52880f70c8a64649bd2770ecc25c6e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _socket: {fileID: 0}
+  _item: {fileID: 0}
   _armDistance: 10
