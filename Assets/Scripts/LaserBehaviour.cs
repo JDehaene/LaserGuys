@@ -53,7 +53,7 @@ public class LaserBehaviour : MonoBehaviour
         for (int i = 0; i < 2; ++i) _lineRenderer.SetPosition(i, _players[i].transform.position);
     }
 
-    #region Slicing
+    #region Cutting
     public void Slice()
     {
         SlicedHull hull = SliceObject(_hit.transform.gameObject, _cutMaterial);
@@ -85,6 +85,7 @@ public class LaserBehaviour : MonoBehaviour
         if (obj.GetComponent<MeshFilter>() == null)
             return null;
 
+        EventManager.NotifyOnCut(obj);
         return obj.Slice(_midPoint.position, _midPoint.transform.up, crossSectionMaterial);
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class PathMovement : MonoBehaviour
 {
     [SerializeField] private Transform[] _points;
