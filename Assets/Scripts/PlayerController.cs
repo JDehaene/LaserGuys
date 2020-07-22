@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _weight = -40.0f;
     [SerializeField] private int _amountOfJumps = 2;
 
+    private float _DEBUG_HighestJumpVelocity = 0.0f;
+
     private int _jumpsLeft = 0;
     private Vector3 _velocity = new Vector3();
     private Vector3 _acceleration = new Vector3();
@@ -67,8 +69,8 @@ public class PlayerController : MonoBehaviour
     {
         if (_jumpsLeft <= 0) return;
 
-        _acceleration.y = _jumpForce * 1000;
         _velocity.y = 0;
+        _acceleration.y = _jumpForce * 1000;
 
         --_jumpsLeft;
     }
@@ -105,6 +107,11 @@ public class PlayerController : MonoBehaviour
         vertVel = Mathf.Clamp(vertVel, -100000, _maxJumpSpeed);
 
         _controller.Move(new Vector3(0, vertVel, 0) * Time.deltaTime);
+
+        if (vertVel > _DEBUG_HighestJumpVelocity)
+        {
+            _DEBUG_HighestJumpVelocity = vertVel;
+        }
 
         if (_controller.isGrounded) vertVel = 0;
         _velocity.y = vertVel;

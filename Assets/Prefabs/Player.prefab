@@ -189,9 +189,9 @@ MonoBehaviour:
   _id: 1
   _accelerationPower: 50
   _maxSpeed: 20
-  _maxJumpSpeed: 20
+  _maxJumpSpeed: 15
   _horizontalDrag: 20
-  _jumpForce: 2
+  _jumpForce: 3
   _weight: -35
   _amountOfJumps: 2
 --- !u!143 &3657962945429831234
